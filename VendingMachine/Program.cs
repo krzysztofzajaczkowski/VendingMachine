@@ -7,100 +7,85 @@ namespace VendingMachine
     {
         static void Main(string[] args)
         {
-            string[] options = {
-                "Change card",
-                "See products",
-                "Check funds in machine",
-                "Insert coins",
-                "Use card",
-                "Withdraw",
-                "Select products",
-                "EXIT"
-            };
-            
-            double money = 10;
-            List<Product> products = new List<Product>()
+            char[,] tab = new char[10,10];
+            for (int x = 0; x < 10; x++)
             {
-                new Drink("Fuzzy Drink", 2.5, 10),
-                new Drink("Shea Tea", 3.5, 5),
-                new Snack("Snack-y", 1.75, 10),
-                new Snack("Delicious Bar", 2.30, 8),
-                new Drink("Fiddly", 1.80, 5, false),
-                new Snack("Too-doo", 1, 1)
-
-            };
-            VendingMachine vendingMachine = new VendingMachine(products);
-            var javaFanCard = new JavaFanCreditCard(15,DateTime.Today.AddDays(-2));
-            var bestBankCard = new BestBankCreditCard(15,DateTime.Today.AddMonths(15));
-            ICreditCard selectedCard = bestBankCard;
-            string option;
-            int code;
-            double amountToInsert;
-            double amountWithdrawn;
+                for (int y = 0; y < 10; y++)
+                {
+                    tab[x,y] = ' ';
+                }
+            }
+            List<BoardObject> boardObjects = new List<BoardObject>();
+            Player player = new Player();
+            VendingMachine vendingMachine = new VendingMachine(5,5);
+            boardObjects.Add(player);
+            boardObjects.Add(vendingMachine);
+            ConsoleKey key;
+            Point playerPosition = player.Position;
+            Point newPoint;
+            int dX = 0, dY = 0;
+            bool interact = false;
+            foreach (var boardObject in boardObjects)
+            {
+                tab[boardObject.Position.X, boardObject.Position.Y] = boardObject.Symbol;
+            } 
             while (true)
             {
-                Console.WriteLine(" ");
-                Console.WriteLine("----------------------------");
-                Console.WriteLine("Cash: {0} $", money);
-                Console.WriteLine("Card: {0}, Balance: {1} $", javaFanCard.BankName, javaFanCard.Balance);
-                Console.WriteLine("Card: {0}, Balance: {1} $", bestBankCard.BankName, bestBankCard.Balance);
-                Console.WriteLine("Selected card: {0}", selectedCard.BankName);
-                Console.WriteLine("----------------------------");
-                for (int i = 0; i < options.Length; i++)
+                Console.Clear();
+                Console.WriteLine("--------------------");
+                for (int y = 0; y < 10; y++)
                 {
-                    Console.WriteLine("{0}. " + options[i], i);
+                    Console.Write("|");
+                    for (int x = 0; x < 10; x++)
+                    {
+                        Console.Write(tab[x,y] + " ");
+                    }
+                    Console.Write("|\n");
                 }
-                Console.Write("Select option: ");
-                option = Console.ReadLine();
-                Console.WriteLine(" ");
-                switch (option)
+                Console.WriteLine(" --------------------");
+                interact = false;
+                key = Console.ReadKey().Key;
+                if (key == ConsoleKey.UpArrow)
                 {
-                    case "0":
-                        if (selectedCard.Equals(javaFanCard))
-                        {
-                            selectedCard = bestBankCard;
-                        }
-                        else
-                        {
-                            selectedCard = javaFanCard;
-                        }
-                        break;
-                    case "1":
-                        vendingMachine.SeeProducts();
-                        break;
-                    case "2":
-                        vendingMachine.CheckFunds();
-                        break;
-                    case "3":
-                        Console.WriteLine("Enter amount to insert");
-                        double.TryParse(Console.ReadLine(), out amountToInsert);
-                        if(amountToInsert <= money)
-                        {
-                            vendingMachine.InsertMoney(amountToInsert);
-                            money -= amountToInsert;
-                        }
-                        else
-                        {
-                            Console.WriteLine("You don't have enough money");
-                        }
-                        break;
-                    case "4":
-                        vendingMachine.PayWithCard(selectedCard);
-                        break;
-                    case "5":
-                        amountWithdrawn = vendingMachine.Withdraw();
-                        money += amountWithdrawn;
-                        break;
-                    case "6":
-                        Console.WriteLine("Enter product code");
-                        int.TryParse(Console.ReadLine(), out code);
-                        vendingMachine.BuyProduct(code);
-                        break;
-                    case "7":
-                        return;
-                    default:
-                        break;
+                    dX = 0;
+                    dY = -1;
                 }
+                if (key == ConsoleKey.RightArrow)
+                {
+                    dX = 1;
+                    dY = 0;
+                }
+                if (key == ConsoleKey.DownArrow)
+                {
+                    dX = 0;
+                    dY = 1;
+                }
+                if (key == ConsoleKey.LeftArrow)
+                {
+                    dX = -1;
+                    dY = 0;
+                }
+                newPoint = new Point(playerPosition.X + dX, playerPosition.Y + dY);
+                //Console.WriteLine("X: {0} Y: {1}", newPoint.X, newPoint.Y);
+                if (newPoint.IsViable)
+                {
+                    foreach (var boardObject in boardObjects)
+                    {
+                        if (boardObject.Position.Equals(newPoint))
+                        {
+                            interact = true;
+                            boardObject.Interact(player);
+                        }
+                    }
+                    if (!interact)
+                    {
+                        tab[player.Position.X, player.Position.Y] = ' ';
+                        player.Move(newPoint);
+                        playerPosition = newPoint;
+                        tab[player.Position.X, player.Position.Y] = player.Symbol;
+                    }
+                }
+                //Console.WriteLine(Console.ReadKey().Key == ConsoleKey.UpArrow);
             }
         }
     }

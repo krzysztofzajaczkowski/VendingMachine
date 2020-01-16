@@ -5,12 +5,16 @@ using System.Linq;
 
 namespace VendingMachine
 {
-    public class VendingMachine
+    public class VendingMachine : BoardObject
     {
+        public char Symbol { get; set; }
+        public Point Position { get; set; }
         public double Credit { get; set; }
         public List<Product> Products { get; set; }
         public bool UsingCreditCard { get; set; } = false;
         public ICreditCard CreditCard { get; set; }
+        public string[] Interface { get; set; }
+
         public double MaxPrice { 
             get
             {
@@ -18,14 +22,44 @@ namespace VendingMachine
             }
         }
 
-        public VendingMachine()
+        public VendingMachine(int x, int y) : base(x, y, 'V')
         {
             Credit = 0;
+            Products = new List<Product>()
+            {
+                new Drink("Fuzzy Drink", 2.5, 10),
+                new Drink("Shea Tea", 3.5, 5),
+                new Snack("Snack-y", 1.75, 10),
+                new Snack("Delicious Bar", 2.30, 8),
+                new Drink("Fiddly", 1.80, 5, false),
+                new Snack("Too-doo", 1, 1)
+
+            };
+            Interface = new string[] {
+                "Change card",
+                "See products",
+                "Check funds in machine",
+                "Insert coins",
+                "Use card",
+                "Withdraw",
+                "Select products",
+                "EXIT"
+            };
         }
-        public VendingMachine(List<Product> products)
+        public VendingMachine(int x, int y, List<Product> products) : base(x, y, 'V')
         {
             Credit = 0;
             Products = products;
+            Interface = new string[] {
+                "Change card",
+                "See products",
+                "Check funds in machine",
+                "Insert coins",
+                "Use card",
+                "Withdraw",
+                "Select products",
+                "EXIT"
+            };
         }
 
         public bool InsertMoney(double amount)
@@ -154,6 +188,75 @@ namespace VendingMachine
             Credit = 0;
             Console.WriteLine("{0} $ in coins withdrawn", amountWithdrawn);
             return amountWithdrawn;
+        }
+        
+        public void Menu(Player player)
+        {
+            string option;
+            int code;
+            double amountToInsert;
+            double amountWithdrawn;
+            while (true)
+            {
+                Console.WriteLine(" ");
+                for (int i = 0; i < Interface.Length; i++)
+                {
+                    Console.WriteLine("{0}. " + Interface[i], i);
+                }
+                Console.Write("Select option: ");
+                option = Console.ReadLine();
+                Console.WriteLine(" ");
+                switch (option)
+                {
+                    case "0":
+                        player.SwitchSelectedCards();
+                        break;
+                    case "1":
+                        SeeProducts();
+                        break;
+                    case "2":
+                        CheckFunds();
+                        break;
+                    case "3":
+                        Console.WriteLine("Enter amount to insert");
+                        double.TryParse(Console.ReadLine(), out amountToInsert);
+                        if(amountToInsert <= player.Money)
+                        {
+                            InsertMoney(amountToInsert);
+                            player.Money -= amountToInsert;
+                        }
+                        else
+                        {
+                            Console.WriteLine("You don't have enough money");
+                        }
+                        break;
+                    case "4":
+                        PayWithCard(player.SelectedCreditCard);
+                        break;
+                    case "5":
+                        amountWithdrawn = Withdraw();
+                        player.Money += amountWithdrawn;
+                        break;
+                    case "6":
+                        Console.WriteLine("Enter product code");
+                        int.TryParse(Console.ReadLine(), out code);
+                        BuyProduct(code);
+                        break;
+                    case "7":
+                        return;
+                    default:
+                        break;
+                }
+                Console.WriteLine(" ");
+            }
+        }
+
+        public override void Interact(BoardObject boardObject)
+        {
+            if (boardObject is Player)
+            {
+                Menu((Player)boardObject);
+            }
         }
     }
 }
