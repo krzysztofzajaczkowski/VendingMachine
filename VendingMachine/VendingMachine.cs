@@ -199,6 +199,7 @@ namespace VendingMachine
             while (true)
             {
                 Console.WriteLine(" ");
+                player.Details();
                 for (int i = 0; i < Interface.Length; i++)
                 {
                     Console.WriteLine("{0}. " + Interface[i], i);
