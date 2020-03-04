@@ -6,6 +6,11 @@ namespace VendingMachine
 {
     public class ConsoleApplication
     {
+        public IVendingMachine _vendingMachine { get; set; }
+        public ConsoleApplication(IVendingMachine vendingMachine)
+        {
+            _vendingMachine = vendingMachine;
+        }
         public void Run()
         {
             string[] options = {
@@ -30,7 +35,6 @@ namespace VendingMachine
                 new Snack("Too-doo", 1, 1)
 
             };
-            VendingMachine vendingMachine = new VendingMachine(products);
             var javaFanCard = new JavaFanCreditCard(15,DateTime.Today.AddDays(-2));
             var bestBankCard = new BestBankCreditCard(15,DateTime.Today.AddMonths(15));
             ICreditCard selectedCard = bestBankCard;
@@ -67,17 +71,17 @@ namespace VendingMachine
                         }
                         break;
                     case "1":
-                        vendingMachine.SeeProducts();
+                        _vendingMachine.SeeProducts();
                         break;
                     case "2":
-                        vendingMachine.CheckFunds();
+                        _vendingMachine.CheckFunds();
                         break;
                     case "3":
                         Console.WriteLine("Enter amount to insert");
                         double.TryParse(Console.ReadLine(), out amountToInsert);
                         if(amountToInsert <= money)
                         {
-                            vendingMachine.InsertMoney(amountToInsert);
+                            _vendingMachine.InsertMoney(amountToInsert);
                             money -= amountToInsert;
                         }
                         else
@@ -86,16 +90,16 @@ namespace VendingMachine
                         }
                         break;
                     case "4":
-                        vendingMachine.PayWithCard(selectedCard);
+                        _vendingMachine.PayWithCard(selectedCard);
                         break;
                     case "5":
-                        amountWithdrawn = vendingMachine.Withdraw();
+                        amountWithdrawn = _vendingMachine.Withdraw();
                         money += amountWithdrawn;
                         break;
                     case "6":
                         Console.WriteLine("Enter product code");
                         int.TryParse(Console.ReadLine(), out code);
-                        vendingMachine.BuyProduct(code);
+                        _vendingMachine.BuyProduct(code);
                         break;
                     case "7":
                         return;
