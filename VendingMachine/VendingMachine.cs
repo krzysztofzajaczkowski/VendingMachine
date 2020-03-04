@@ -39,7 +39,7 @@ namespace VendingMachine
                 Withdraw();
             }
             Random random = new Random();
-            if (random.Next(100) < 101)
+            if (random.Next(100) < 15)
             {
                 Credit += amount;
                 CheckFunds();
