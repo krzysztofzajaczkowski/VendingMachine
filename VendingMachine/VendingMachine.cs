@@ -2,30 +2,34 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using Microsoft.Extensions.Configuration;
 
 namespace VendingMachine
 {
-    public class VendingMachine
+    public class VendingMachine : IVendingMachine
     {
+        private IConfiguration _config { get; set; }
         public double Credit { get; set; }
         public List<Product> Products { get; set; }
         public bool UsingCreditCard { get; set; } = false;
         public ICreditCard CreditCard { get; set; }
-        public double MaxPrice { 
+        public double MaxPrice
+        {
             get
             {
                 return Products.Max(p => p.Price);
             }
         }
 
-        public VendingMachine()
+        public VendingMachine(IConfiguration config)
         {
+            _config = config;
+            var snacks = config.GetSection("Products").GetSection("Snacks").Get<List<Snack>>();
+            var drinks = config.GetSection("Products").GetSection("Drinks").Get<List<Drink>>();
+            Products = new List<Product>();
+            Products.AddRange(snacks);
+            Products.AddRange(drinks);
             Credit = 0;
-        }
-        public VendingMachine(List<Product> products)
-        {
-            Credit = 0;
-            Products = products;
         }
 
         public bool InsertMoney(double amount)
@@ -35,7 +39,7 @@ namespace VendingMachine
                 Withdraw();
             }
             Random random = new Random();
-            if(random.Next(100) < 101)
+            if (random.Next(100) < 101)
             {
                 Credit += amount;
                 CheckFunds();
@@ -55,7 +59,7 @@ namespace VendingMachine
                     Products[i].PrintDetails();
                     Console.Write("\n");
                 }
-                
+
             }
         }
 
@@ -63,7 +67,7 @@ namespace VendingMachine
         {
             if (code < Products.Count)
             {
-                if(Products[code].IsAvailable)
+                if (Products[code].IsAvailable)
                 {
                     if (UsingCreditCard)
                     {
@@ -74,7 +78,7 @@ namespace VendingMachine
                     }
                     else
                     {
-                        if(Products[code].Price <= Credit)
+                        if (Products[code].Price <= Credit)
                         {
                             Credit -= Products[code].Price;
                             Withdraw();
@@ -91,7 +95,7 @@ namespace VendingMachine
                 {
                     Console.WriteLine("This product is unavailable");
                 }
-                
+
             }
             else
             {
