@@ -22,12 +22,6 @@ namespace VendingMachine
 
             var config = LoadConfiguration();
 
-            Console.WriteLine("Start");
-            var snack = config.GetSection("Products").GetSection("Snacks:0").Get<Snack>();
-            Console.WriteLine(snack.Name);
-            Console.WriteLine("Stop");
-            
-
             services.AddSingleton(config);
 
             services.AddTransient<IVendingMachine, VendingMachine>();
