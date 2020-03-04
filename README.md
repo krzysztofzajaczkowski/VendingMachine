@@ -4,6 +4,8 @@ A simple program that allows users to buy products using coins or credit cards.
 Every product has its price and stock.
 I used services to resolve dependencies and ConfigurationBuilder to load config from json file
 
+Created as a project suggestion for next semester C# in a nutshell series of workshops
+
 ## Classes and their use
 
 * Program
