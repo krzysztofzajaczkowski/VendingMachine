@@ -11,6 +11,10 @@ namespace VendingMachine
         public int Stock { get; set; }
         public bool IsAvailable { get; set; }
 
+        public Product()
+        {
+            IsAvailable = true;
+        }
         public Product(string name, double price, int stock)
         {
             Name = name;

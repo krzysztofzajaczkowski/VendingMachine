@@ -6,6 +6,10 @@ namespace VendingMachine
 {
     public class Snack : Product
     {
+        public Snack()
+        {
+
+        }
         public Snack(string name, double price, int stock) : base(name, price, stock)
         {
 
