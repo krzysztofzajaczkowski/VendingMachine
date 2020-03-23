@@ -38,8 +38,13 @@ namespace VendingMachine
             {
                 Withdraw();
             }
+            if (amount < 0)
+            {
+                Console.WriteLine("You cannot insert negative amount");
+                return false;
+            }
             Random random = new Random();
-            if (random.Next(100) < 15)
+            if (random.Next(100) < 90)
             {
                 Credit += amount;
                 CheckFunds();
@@ -51,6 +56,7 @@ namespace VendingMachine
 
         public void SeeProducts()
         {
+            Console.WriteLine("{0, -18}| {1,-6}| {2,-5}", "Name", "Stock", "Price");
             for (int i = 0; i < Products.Count; i++)
             {
                 if (Products[i].Stock > 0)

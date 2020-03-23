@@ -58,6 +58,7 @@ namespace VendingMachine
                 Console.Write("Select option: ");
                 option = Console.ReadLine();
                 Console.WriteLine(" ");
+                Console.Clear();
                 switch (option)
                 {
                     case "0":
@@ -79,14 +80,17 @@ namespace VendingMachine
                     case "3":
                         Console.WriteLine("Enter amount to insert");
                         double.TryParse(Console.ReadLine(), out amountToInsert);
-                        if(amountToInsert <= money)
+                        if (amountToInsert >= 0)
                         {
-                            _vendingMachine.InsertMoney(amountToInsert);
-                            money -= amountToInsert;
-                        }
-                        else
-                        {
-                            Console.WriteLine("You don't have enough money");
+                            if(amountToInsert <= money)
+                            {
+                                _vendingMachine.InsertMoney(amountToInsert);
+                                money -= amountToInsert;
+                            }
+                            else
+                            {
+                                Console.WriteLine("You don't have enough money");
+                            }
                         }
                         break;
                     case "4":
