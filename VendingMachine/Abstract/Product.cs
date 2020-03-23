@@ -40,7 +40,7 @@ namespace VendingMachine
 
         public void PrintDetails()
         {
-            Console.Write("{0}  | {1} | {2} $",Name, Stock, Price);
+            Console.Write("{0, -15}| {1,-6}| ${2,-5}",Name, Stock, Price);
         }
         public abstract void Consume();
     }
